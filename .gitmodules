@@ -1,0 +1,6 @@
+[submodule "frontend"]
+	path = frontend
+	url = file:///E:/repos/web/plant-app/frontend
+[submodule "backend"]
+	path = backend
+	url = file:///E:/repos/web/plant-app/backend
