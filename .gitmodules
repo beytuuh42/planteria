@@ -1,6 +1,6 @@
 [submodule "frontend"]
 	path = frontend
-	url = file:///E:/repos/web/plant-app/frontend
+	url = https://github.com/beytuuh42/planteria-fe-angular
 [submodule "backend"]
 	path = backend
-	url = file:///E:/repos/web/plant-app/backend
+	url = https://github.com/beytuuh42/planteria-be-django
