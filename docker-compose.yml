@@ -1,19 +1,17 @@
-
 # docker compose version
-version: '3.8'
+version: "3.8"
 
 services:
-  
   # frontend service
   web:
     # start api before web
     depends_on:
       - api
-    
+
     # location of Dockerfile
     build: ./frontend
     command: ng serve --host 0.0.0.0 --port ${DOCKER_CLIENT_PORT_FORWARD}
-    ports: 
+    ports:
       - ${CLIENT_PORT}:${DOCKER_CLIENT_PORT_FORWARD}
     environment:
       BASE_API_URL: http://${SERVER_IP}:${DOCKER_SERVER_PORT_FORWARD}/api/v1
@@ -33,36 +31,49 @@ services:
           target: /app
           action: sync
 
-
   # backend service
   api:
+    image: django-docker:0.0.1
     depends_on:
       - db
     build: ./backend
     command: python manage.py runserver 0.0.0.0:${DOCKER_SERVER_PORT_FORWARD}
     ports:
       - ${SERVER_PORT}:${DOCKER_SERVER_PORT_FORWARD}
-    image: django-docker:0.0.1
-    environment:
-      - DB_URL=mongodb://db/plant
     env_file:
       - .env
-
     develop:
       watch:
-      - path: ./backend/requirements.txt
-        action: rebuild
-      - path: ./backend
-        target: /app
-        action: sync
-
+        - path: ./backend/requirements.txt
+          action: rebuild
+        - path: ./backend
+          target: /app
+          action: sync
 
   db:
     image: postgres:16-bookworm
-    volumes:
-      - plant:/var/lib/postgresql/data/
+    restart: always
+    ports:
+      - ${POSTGRES_PORT}:${DOCKER_POSTGRES_PORT_FORWARD}
     environment:
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdb-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - ${PGADMIN_PORT}:${DOCKER_PGADMIN_PORT_FORWARD}
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
 
 volumes:
-  plant:
+  pgdb-data:
+  pgadmin-data:
