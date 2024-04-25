@@ -14,6 +14,7 @@ services:
     ports:
       - ${CLIENT_PORT}:${DOCKER_CLIENT_PORT_FORWARD}
     environment:
+      BASE_SERVERURL: http://${SERVER_IP}:${DOCKER_SERVER_PORT_FORWARD}
       BASE_API_URL: http://${SERVER_IP}:${DOCKER_SERVER_PORT_FORWARD}/api/v1
     env_file:
       - .env
